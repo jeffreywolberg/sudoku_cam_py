@@ -7,6 +7,7 @@ from tensorflow.keras.layers import MaxPooling2D
 from tensorflow.keras.layers import BatchNormalization
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras.models import Model as kerasModel
+from tensorflow.keras.optimizers import Adam
 
 
 def MNIST_medium_model() -> kerasModel:
@@ -44,23 +45,22 @@ def MNIST_large_model() -> kerasModel:
     mod.compile(loss='categorical_crossentropy', optimizer='Adam', metrics=['accuracy'])
     return mod
 
-def MNIST_large_model2(im_length=28) -> kerasModel:
+def MNIST_large_model2(im_length=28, learning_rate=1e-3) -> kerasModel:
     weight_decay = 1e-3
     mod = Sequential()
-    mod.add(Conv2D(32, (5, 5), activation='relu', padding='same', input_shape=(im_length, im_length, 1),
-                   ))
-    mod.add(MaxPooling2D((2, 2)))
+    mod.add(Conv2D(32, (5, 5), activation='relu', padding='same', input_shape=(im_length, im_length, 1),))
     mod.add(Conv2D(32, (5, 5), activation='relu'))
+    mod.add(MaxPooling2D((2, 2)))
     mod.add(Dropout(0.20))
 
     mod.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
-    mod.add(MaxPooling2D((2, 2)))
     mod.add(Conv2D(64, (3, 3), activation='relu'))
+    mod.add(MaxPooling2D((2, 2)))
     mod.add(Dropout(0.20))
 
     mod.add(Flatten())
     mod.add(Dense(128, activation='relu'))
     mod.add(Dense(50, activation='relu'))
-    mod.add(Dense(10, activation='softmax'))
-    mod.compile(loss='categorical_crossentropy', optimizer='Adam', metrics=['accuracy'])
+    mod.add(Dense(9, activation='softmax')) # 0 is not included
+    adam = Adam(learning_rate=learning_rate)
     return mod

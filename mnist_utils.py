@@ -21,11 +21,15 @@ def __add_black(im_slice : np.ndarray, padding):
     im_slice = np.insert(im_slice, 0, values)
     return im_slice
 
-
-def add_black(images : np.ndarray, padding=3):
-    images = np.apply_along_axis(__add_black, 1, images, padding)
-    return np.apply_along_axis(__add_black, 2, images, padding)
-
+def add_black(images : np.ndarray, d_size = 34, old_size = 28):
+    padding = int((d_size-old_size)/2)
+    sh = images.shape
+    new_ims = np.zeros((sh[0], sh[1]+2*padding, sh[2]+2*padding), dtype=np.int)
+    new_sh = new_ims.shape
+    new_ims[:, padding:new_sh[1]-padding, padding:new_sh[2]-padding] = images
+    # images = np.apply_along_axis(__add_black, 1, images, padding)
+    # return np.apply_along_axis(__add_black, 2, images, padding)
+    return new_ims
 
 def find_top_and_bottom_limits(images : np.ndarray) -> np.ndarray:
     # find how many images have at least 20 white pixels, these are the cells with numbers
