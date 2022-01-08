@@ -15,7 +15,6 @@ import numpy as np
 import os
 import time
 import random
-import imgaug
 # import cv2
 
 join = os.path.join
@@ -98,8 +97,8 @@ X_test = X_test.reshape(X_test.shape[0], im_length, im_length, 1)
 # one hot encode outputs
 print(y_train[0])
 # 0 is not included
-y_train = to_categorical(y_train)
-y_test = to_categorical(y_test)
+y_train = to_categorical(y_train-1)
+y_test = to_categorical(y_test-1)
 
 print(y_train[0], y_train[0].shape)
 
@@ -111,7 +110,7 @@ model = MNIST_large_model2(im_length)
 new_model_path = join(os.getcwd(), "tf_models/large2a")
 # adam = tf.keras.optimizers.Adam(learning_rate=1e-3)
 # model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
-model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=20, batch_size=150, verbose=2,
+model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=25, batch_size=150, verbose=2,
           )
 
 scores = model.evaluate(X_test, y_test, verbose=0)

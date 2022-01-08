@@ -61,8 +61,8 @@ def MNIST_large_model2(im_length=28) -> kerasModel:
     mod.add(Flatten())
     mod.add(Dense(128, activation='relu'))
     mod.add(Dense(50, activation='relu'))
-    mod.add(Dense(10, activation='softmax'))
-    opt = SGD(learning_rate=0.0004, momentum=0.9)
+    mod.add(Dense(9, activation='softmax'))
+    opt = SGD(learning_rate=0.0002, momentum=0.9)
     mod.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
     return mod
 
