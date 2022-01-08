@@ -72,44 +72,46 @@ print(f"Added black padding in {time.time() - s} seconds")
 print(X_train.shape)
 print(X_test.shape)
 
+# s = time.time()
+# print("Converting images to binary...")
+# for i in range(X_train.shape[0]):
+#     X_train[i] = cv2.threshold(X_train[i], random.gauss(150, 25), 1, cv2.CV_8U)[1].astype('float32')
+# for i in range(X_test.shape[0]):
+#     X_test[i] = cv2.threshold(X_test[i], random.gauss(150, 25), 1, cv2.CV_8U)[1].astype('float32')
+# print(f"Finished in {time.time() - s} seconds")
 
-X_train = X_train.astype('float32')
-X_test = X_test.astype('float32')
 
-s = time.time()
-print("Converting images to binary...")
-for i in range(X_train.shape[0]):
-    X_train[i] = cv2.threshold(X_train[i], random.gauss(150, 30), 1.0, cv2.CV_8U)[1].astype('float32')
-for i in range(X_test.shape[0]):
-    X_test[i] = cv2.threshold(X_test[i], random.gauss(150, 30), 1.0, cv2.CV_8U)[1].astype('float32')
-print(f"Finished in {time.time() - s} seconds")
+X_train = (X_train/255.0).astype('float32')
+X_test = (X_test/255.0).astype('float32')
 
-for i in range(40, 200, 9):
-    for j in range(i, i+9):
-        X_train[j] = cv2.threshold(X_train[j], random.gauss(160, 25), 1, cv2.CV_8U)[1].astype('float32')
-    peek_at_data(X_train, [n for n in range(i,i+9)])
+print(X_train[0][14])
 
-num_pixels = X_train.shape[1] * X_train.shape[2]
-X_train = X_train.reshape(X_train.shape[0], im_length, im_length, 1).astype('float32')
-X_test = X_test.reshape(X_test.shape[0], im_length, im_length, 1).astype('float32')
 
+# for i in range(40, 200, 9):
+#     for j in range(i, i+9):
+#         X_train[j] = cv2.threshold(X_train[j]*255, random.gauss(150, 25), 1, cv2.CV_8U)[1].astype('float32')
+#     peek_at_data(X_train, [n for n in range(i,i+9)])
+
+X_train = X_train.reshape(X_train.shape[0], im_length, im_length, 1)
+X_test = X_test.reshape(X_test.shape[0], im_length, im_length, 1)
 
 # one hot encode outputs
 print(y_train[0])
 # 0 is not included
-y_train = to_categorical(y_train-1, num_classes=9)
-y_test = to_categorical(y_test-1, num_classes=9)
+y_train = to_categorical(y_train)
+y_test = to_categorical(y_test)
 
 print(y_train[0], y_train[0].shape)
 
 # tensorflow.keras.callbacks.ModelCheckpoint(saved_model_path, 'val_acc', save_best_only=True, )
 
 model = MNIST_large_model2(im_length)
+# model = MNIST_model_example(im_length)
 # model: kerasModel = tensorflow.keras.models.load_model(saved_model_path)
 new_model_path = join(os.getcwd(), "tf_models/large2a")
-adam = tf.keras.optimizers.Adam(learning_rate=4e-4)
-model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
-model.fit(X_train, y_train, validation_data=(X_test, X_test), epochs=20, batch_size=150, verbose=2,
+# adam = tf.keras.optimizers.Adam(learning_rate=1e-3)
+# model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
+model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=20, batch_size=150, verbose=2,
           )
 
 scores = model.evaluate(X_test, y_test, verbose=0)

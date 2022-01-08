@@ -24,7 +24,7 @@ def __add_black(im_slice : np.ndarray, padding):
 def add_black(images : np.ndarray, d_size = 34, old_size = 28):
     padding = int((d_size-old_size)/2)
     sh = images.shape
-    new_ims = np.zeros((sh[0], sh[1]+2*padding, sh[2]+2*padding), dtype=np.int)
+    new_ims = np.zeros((sh[0], sh[1]+2*padding, sh[2]+2*padding), dtype=np.float)
     new_sh = new_ims.shape
     new_ims[:, padding:new_sh[1]-padding, padding:new_sh[2]-padding] = images
     # images = np.apply_along_axis(__add_black, 1, images, padding)
