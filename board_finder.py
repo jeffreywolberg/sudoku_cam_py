@@ -6,6 +6,10 @@ from imutils.perspective import four_point_transform
 from skimage.segmentation import clear_border
 import numpy as np
 import imutils
+import os
+
+join = os.path.join
+basename = os.path.basename
 
 class ImageProcessor(object):
     @staticmethod
@@ -92,10 +96,13 @@ class ImageProcessor(object):
     def extract_digit(cell, debug=False):
         # apply automatic thresholding to the cell and then clear any
         # connected borders that touch the border of the cell
-        thresh = cv2.threshold(cell, 200, 255,
+
+        # a higher threshold makes the digit in the image 'thicker/wider'
+        thresh = cv2.threshold(cell, 170, 255,
                                cv2.THRESH_BINARY_INV
                                # | cv2.THRESH_OTSU
                                )[1]
+
         # thresh = cv2.adaptiveThreshold(cell, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2)
 
 
@@ -153,34 +160,29 @@ class SudokuSolver(object):
         print(board_image.shape)
         return ImageProcessor.get_individual_boxes(board_image, im_length, debug)
 
+    def get_and_save_test_images(self, sudoku_img_paths : list, im_length=28):
+        dir_name = "test_set"
+        directory = join(os.getcwd(), dir_name)
+        print(directory)
+        if not os.path.isdir(directory):
+            print(f"Making directory... {directory}")
+            os.mkdir(directory)
+        for im_path in sudoku_img_paths:
+            imgs = self.find_puzzle(cv2.imread(im_path), im_length=im_length).reshape((81, im_length, im_length))
+            for i in range(81):
+                im = imgs[i]
+                cv2.imwrite(join(dir_name, basename(im_path) + f"_im{i}.png"), im)
+            print(f"Saved 81 images for sudoku board in {basename(im_path)}")
 
-
-
-def open_camera():
-    cap = cv2.VideoCapture(0)
-    if not cap.isOpened():
-        print("Cannot open camera")
-        quit()
-    while True:
-        # Capture frame-by-frame
-        ret, frame = cap.read()
-        # if frame is read correctly ret is True
-        if not ret:
-            print("Can't receive frame (stream end?). Exiting ...")
-            break
-        # Our operations on the frame come here
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        # Display the resulting frame
-        cv2.imshow('frame', gray)
-        if cv2.waitKey(1) == ord('q'):
-            break
-    # When everything done, release the capture
-    cap.release()
-    cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":
     # open_camera()
-    image = cv2.imread("./test.PNG")
     solver = SudokuSolver()
-    solver.find_puzzle(image, debug=True)
+
+    # im_paths = ["test.PNG", "sample_board.jpg", "sample_board2.jpg", "sample_board3.jpg", "sample_board4.jpg", "sample_board5.jpg"]
+    # solver.get_and_save_test_images(im_paths, im_length=34)
+
+    # im_path = "./test.PNG"
+    # image = cv2.imread(im_path)
+    # solver.find_puzzle(image, debug=True, im_length=34)
