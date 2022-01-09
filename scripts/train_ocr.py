@@ -55,27 +55,41 @@ def load_custom_data(data_folder):
         im_path = txt_file[:-4] + ".png"
         if not os.path.exists(im_path):
             continue
-        im = cv2.erode(cv2.threshold(cv2.imread(im_path), 120, 1.0, cv2.CV_8U)[1].astype('float32'), (15, 15))
+        im = cv2.erode(cv2.threshold(cv2.imread(im_path), 50, 1.0, cv2.CV_8U)[1].astype('float32'), (15, 15))
         label = get_label(txt_file)
         imgs.append(im)
         labels.append(label)
     return imgs, labels
 
+
+# LOAD CUSTOM DATA
 data_dir = "/Users/jeffrey/Coding/sudoku_cam_py/sudoku_dataset/digit_images"
 custom_imgs, custom_labels = load_custom_data(data_dir)
-for i in range(0, len(custom_imgs), 9):
-    peek_at_data(custom_imgs, [j for j in range(i, i+9)])
+# for i in range(0, len(custom_imgs), 9):
+#     peek_at_data(custom_imgs, [j for j in range(i, i+9)])
+data_dir2 = r"/Users/jeffrey/Coding/sudoku_cam_py/training_set"
+custom_imgs2, custom_labels2 = load_custom_data(data_dir2)
+custom_imgs.extend(custom_imgs2)
+custom_labels.extend(custom_labels2)
+split_at = int(.85 * len(custom_imgs))
+print(f"Length of custom images {len(custom_imgs)}")
+print(type(custom_imgs))
+custom_imgs_train, custom_labels_train = custom_imgs[:split_at], custom_labels[:split_at]
+custom_imgs_test, custom_labels_test = custom_imgs[split_at:], custom_labels[split_at:]
 
-
-
+#
+# for i in range(0, len(custom_imgs), 9):
+#     peek_at_data(custom_imgs2, [j for j in range(i, i+9)])
+# quit()
 saved_model_path = join(os.getcwd(), "tf_models/large2")
 # tensorflow.keras.models.save_model(mnist_models.MNIST_large_model2(), saved_model_path)
 # convert_model_from_path_to_tflite(saved_model_path)
 # quit()
 #
 
-(X_train, y_train), (X_test, y_test) = mnist.load_data()
 im_length = 34
+
+(X_train, y_train), (X_test, y_test) = mnist.load_data()
 
 print(X_train.shape)
 print(X_test.shape)
@@ -97,6 +111,17 @@ X_test = add_black(X_test, d_size=im_length, old_size=28)
 print(f"Added black padding in {time.time() - s} seconds")
 print(X_train.shape)
 print(X_test.shape)
+
+
+# COMBINE MNIST AND CUSOTM DATA
+custom_imgs_train_reshaped = np.array(custom_imgs_train).reshape((-1, im_length, im_length))
+custom_labels_train_reshaped = np.array(custom_labels_train)
+print(X_train.shape, custom_imgs_train_reshaped.shape)
+print(y_train.shape, custom_labels_train_reshaped.shape)
+X_train = np.concatenate((X_train, custom_imgs_train_reshaped))
+y_train = np.concatenate((y_train, custom_labels_train))
+print(X_train.shape, y_train.shape)
+quit()
 
 s = time.time()
 print("Converting images to binary...")

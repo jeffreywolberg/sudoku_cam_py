@@ -175,7 +175,7 @@ if __name__ == "__main__":
     # labeling.get_and_save_images("/Users/jeffrey/Coding/sudoku_cam_py/board_images", im_length=34, dir_name="training_set")
     # labeling.run_labeling_pipeline()
     # labeling.run_labeling_pipeline()
-    labeling.process_sudoku_dataset(images_folder,
-                                    dir_name=digit_folder)
-    labeling.remove_images_with_zero(digit_folder)
+    # labeling.process_sudoku_dataset(images_folder,
+    #                                 dir_name=digit_folder)
+    labeling.remove_images_with_zero(folder)
 
