@@ -36,15 +36,17 @@ def convert_keras_model_to_tflite(model: tf.keras.models.Model, model_path: str)
 def convert_model_from_path_to_tflite(model_path: str):
     converter = tf.lite.TFLiteConverter.from_saved_model(model_path)
     tflite_model = converter.convert()
+    if not os.path.isdir("tflite_models"): os.mkdir("tflite_models")
     new_path = join("tflite_models", os.path.basename(model_path) + ".tflite")
     with open(new_path, 'wb') as f:
         f.write(tflite_model)
+    print(f"Saved tflite model to {new_path}")
 
 
-saved_model_path = join(os.getcwd(), "tf_models/large2")
+saved_model_path = join(os.getcwd(), "tf_models/large2a")
 # tensorflow.keras.models.save_model(mnist_models.MNIST_large_model2(), saved_model_path)
-# convert_model_from_path_to_tflite(saved_model_path)
-# quit()
+convert_model_from_path_to_tflite(saved_model_path)
+quit()
 #
 
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
@@ -71,20 +73,18 @@ print(f"Added black padding in {time.time() - s} seconds")
 print(X_train.shape)
 print(X_test.shape)
 
-# s = time.time()
-# print("Converting images to binary...")
-# for i in range(X_train.shape[0]):
-#     X_train[i] = cv2.threshold(X_train[i], random.gauss(150, 25), 1, cv2.CV_8U)[1].astype('float32')
-# for i in range(X_test.shape[0]):
-#     X_test[i] = cv2.threshold(X_test[i], random.gauss(150, 25), 1, cv2.CV_8U)[1].astype('float32')
-# print(f"Finished in {time.time() - s} seconds")
+s = time.time()
+print("Converting images to binary...")
+for i in range(X_train.shape[0]):
+    X_train[i] = cv2.threshold(X_train[i], random.gauss(150, 25), 1, cv2.CV_8U)[1].astype('float32')
+for i in range(X_test.shape[0]):
+    X_test[i] = cv2.threshold(X_test[i], random.gauss(150, 25), 1, cv2.CV_8U)[1].astype('float32')
+print(f"Finished in {time.time() - s} seconds")
 
+# X_train = (X_train/255.0).astype('float32')
+# X_test = (X_test/255.0).astype('float32')
 
-X_train = (X_train/255.0).astype('float32')
-X_test = (X_test/255.0).astype('float32')
-
-print(X_train[0][14])
-
+# print(X_train[0][14])
 
 # for i in range(40, 200, 9):
 #     for j in range(i, i+9):
@@ -107,6 +107,7 @@ print(y_train[0], y_train[0].shape)
 model = MNIST_large_model2(im_length)
 # model = MNIST_model_example(im_length)
 # model: kerasModel = tensorflow.keras.models.load_model(saved_model_path)
+if not os.path.isdir("tf_models"): os.mkdir("tf_models")
 new_model_path = join(os.getcwd(), "tf_models/large2a")
 # adam = tf.keras.optimizers.Adam(learning_rate=1e-3)
 # model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
@@ -118,3 +119,5 @@ print("CNN Error: %.2f%%" % (100 - scores[1] * 100))
 tensorflow.keras.models.save_model(model, new_model_path)
 
 print(f"Model saved in ${new_model_path}")
+
+# convert_model_from_path_to_tflite(new_model_path)
