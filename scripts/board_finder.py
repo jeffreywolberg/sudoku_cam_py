@@ -123,7 +123,8 @@ class ImageProcessor(object):
         if cell is None:
             return None
 
-        thresh = cv2.threshold(cell, 150, 255.0,
+        # thresh = cv2.adaptiveThreshold(cell, 255.0, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 3, -2)
+        thresh = cv2.threshold(cell, 140, 255.0,
                                cv2.THRESH_BINARY_INV
                                # | cv2.THRESH_OTSU
                                )[1]
@@ -154,9 +155,7 @@ class ImageProcessor(object):
         digit = cv2.bitwise_and(thresh, thresh, mask=mask)
         # show_image(images=[digit, mask, thresh, cell])
         # check to see if we should visualize the masking step
-        if debug:
-            cv2.imshow("Digit", digit)
-            cv2.waitKey(0)
+
         # return the digit to the calling function
         # print("Max", np.histogram(digit))
         return digit
@@ -204,7 +203,7 @@ class ImageProcessor(object):
 
 
 class SudokuSolver(object):
-    def find_puzzle(self, image : np.ndarray, im_length=28, debug=False, debug_only_crop_and_warp=False):
+    def find_puzzle(self, image : np.ndarray, im_length=28, debug=False, debug_only_crop_and_warp=False, debug_only_get_individual_boxes=False):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         binary_image = ImageProcessor.get_binary_image(gray, debug)
         vertices = ImageProcessor.find_board_vertices(binary_image, debug=debug, colored_im=image)
@@ -212,7 +211,7 @@ class SudokuSolver(object):
 
         # board_image = cv2.resize(board_image, (im_length*9,im_length*9))
         print(board_image.shape)
-        return ImageProcessor.get_individual_boxes(board_image, im_length, debug)
+        return ImageProcessor.get_individual_boxes(board_image, im_length, debug or debug_only_get_individual_boxes)
 
 
 

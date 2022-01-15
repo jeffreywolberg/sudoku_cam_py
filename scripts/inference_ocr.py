@@ -17,7 +17,8 @@ import time
 
 # tensorflow.lite.python.lite.TFLite
 
-path = "/Users/jeffrey/Coding/sudoku_cam_py/sudoku_dataset/mixed/image1005.jpg"
+# path = "/Users/jeffrey/Coding/sudoku_cam_py/sudoku_dataset/mixed/image1005.jpg"
+path = "/Users/jeffrey/Coding/sudoku_cam_py/sudoku_dataset/mixed/image1004.jpg"
 # im = cv2.imread("/Users/jeffrey/Coding/sudoku_cam_py/sudoku_dataset/mixed/image1083.jpg")
 im = cv2.imread(path)
 # im = cv2.imread(r"/Users/jeffrey/Coding/sudoku_cam_py/sudoku_dataset/images/image1084.jpg")
@@ -40,7 +41,7 @@ im = cv2.imread(path)
 join = os.path.join
 
 s = time.time()
-saved_model_path =  "/Users/jeffrey/Coding/sudoku_cam_py/tf_models/MNIST_large_model_0c"
+saved_model_path = "/Users/jeffrey/Coding/sudoku_cam_py/tf_models/MNIST_large_model_0a"
 print(saved_model_path)
 model : kerasModel = load_model(saved_model_path)
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -48,10 +49,20 @@ print("Time to load model: ", time.time()-s, "seconds")
 
 # show_image(im)
 
+
 s = time.time()
 solver = SudokuSolver()
 im_length = 34
-images = solver.find_puzzle(im, im_length, debug=False)
+images = solver.find_puzzle(im, im_length, debug=False, debug_only_get_individual_boxes=True)
+board_image = np.zeros(shape=(9*im_length, 9*im_length))
+
+debug = True
+if debug:
+    for i in range(9):
+        for j in range(9):
+            board_image[i*im_length:(i+1)*im_length, j*im_length:(j+1)*im_length] = images[i, j]
+    cv2.imshow("Image", board_image)
+
 images = np.reshape(images, (81, im_length, im_length)).astype("float32")
 if np.max(images) == 255.0:
     images /= 255.0
@@ -86,6 +97,8 @@ for i, r in enumerate(res):
         print(round(num, 2), end=", ")
     print("]")
     # show_image(images[i])
+
+cv2.waitKey(0)
 
     # if i in [9, 11, 24, 37, 39, 42, 45, 77, 80]:
     #     cv2.imshow("Num", images[i])

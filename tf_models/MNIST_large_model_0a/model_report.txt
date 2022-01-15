@@ -4,7 +4,7 @@ Used []
 as training images, 54077 in total, MNIST count: 54077
 
 Used /Users/jeffrey/Coding/sudoku_cam_py/training_set2, 
-as testing images, 4831 in total, MNIST count: 4510
+as testing images, 10547 in total, MNIST count: 9020
 
-Learning rate: 1e-05, epochs: 10, batch size: 100, error on test set: 1.26%
+Learning rate: 0.0001, epochs: 8, batch size: 200, error on test set: 0.7%
 Image length: 34
