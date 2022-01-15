@@ -2,6 +2,7 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/mnist-competition" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/sudoku_dataset" vcs="Git" />
   </component>
 </project>
