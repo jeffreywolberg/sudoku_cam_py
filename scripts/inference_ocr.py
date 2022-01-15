@@ -1,8 +1,12 @@
+# import sys
+# sys.path.append("/Users/jeffrey/Coding/sudoku_cam_py/mnist-competition")
 from tensorflow.keras.models import Model as kerasModel
 from tensorflow.keras.models import load_model
 from tensorflow.keras.datasets import mnist
 
+
 from board_finder import SudokuSolver
+from mnist_utils import add_black
 from visualize_mnist import peek_at_data, show_image
 from mnist_utils import find_top_and_bottom_limits, find_left_and_right_limits
 
@@ -13,8 +17,11 @@ import time
 
 # tensorflow.lite.python.lite.TFLite
 
-
-im = cv2.imread("sample_board5.jpg")
+path = "/Users/jeffrey/Coding/sudoku_cam_py/sudoku_dataset/mixed/image1005.jpg"
+# im = cv2.imread("/Users/jeffrey/Coding/sudoku_cam_py/sudoku_dataset/mixed/image1083.jpg")
+im = cv2.imread(path)
+# im = cv2.imread(r"/Users/jeffrey/Coding/sudoku_cam_py/sudoku_dataset/images/image1084.jpg")
+# im = cv2.imread("/Users/jeffrey/Coding/sudoku_cam_py/sudoku_dataset/mixed/image1083.jpg")
 
 # sample_board, (28x28) avg bounding box of digit (top, bottom, left, right): 6.3 20.94 8.88 17.3, (14.5, 8.5)
 # sample_board2, (28x28) avg bounding box of digit (top, bottom, left, right): 8.62 18.4 10.22 16.02 (10, 6)
@@ -33,46 +40,53 @@ im = cv2.imread("sample_board5.jpg")
 join = os.path.join
 
 s = time.time()
-saved_model_path = join(os.getcwd(), "tf_models/large2")
+saved_model_path =  "/Users/jeffrey/Coding/sudoku_cam_py/tf_models/MNIST_large_model_0c"
 print(saved_model_path)
 model : kerasModel = load_model(saved_model_path)
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 print("Time to load model: ", time.time()-s, "seconds")
 
-show_image(im)
-
+# show_image(im)
 
 s = time.time()
 solver = SudokuSolver()
-im_length = 36
-images = solver.find_puzzle(im, im_length)
-images = np.reshape(images, (81, im_length, im_length))
-print(images.shape)
+im_length = 34
+images = solver.find_puzzle(im, im_length, debug=False)
+images = np.reshape(images, (81, im_length, im_length)).astype("float32")
+if np.max(images) == 255.0:
+    images /= 255.0
 
-mask = np.sum(images == 255, (1, 2)) >= 10
-inds_w_digits = np.squeeze(np.argwhere(mask == True))
+mask = np.sum(images == 1.0, (1, 2)) >= 15
+inds_w_digits = np.squeeze(np.argwhere(mask))
 images_with_digits = images[mask]
 # for i in range(len(images_with_digits)):
 #     images_with_digits[i] = cv2.erode(images_with_digits[i], kernel=(2, 2))
 
 # peek_at_data(images_with_digits, [i for i in range(10,19)])
 
-print(images_with_digits.shape)
+# # print(images_with_digits.shape)
+# (images, labels), (_, _) = mnist.load_data()
+# images = add_black(images, d_size=im_length, old_size=28)
+# print(images.shape)
+# images = images[:81].reshape((81, im_length, im_length)).astype("float32") / 255.0
 
 res = model.predict(
-    np.expand_dims(images, 3))
+    np.expand_dims(images, 3).astype('float32'))
+
 print("Time to find board and predict digits: ", time.time() - s, "seconds")
 for i, r in enumerate(res):
     print(f"{i}: ", end="")
     # if i in [22, 28, 32, 40, 44, 52, 60, 68]:
-    if np.max(r) > .5:
-        print(np.argmax(r), end=" : ")
+    if np.max(r) >= .4 and i in inds_w_digits:
+        print(np.argmax(r) + 1, end=" : ")
     else:
         print("No number", end=" : ")
     print("[", end="")
     for num in r:
         print(round(num, 2), end=", ")
     print("]")
+    # show_image(images[i])
+
     # if i in [9, 11, 24, 37, 39, 42, 45, 77, 80]:
     #     cv2.imshow("Num", images[i])
     #     cv2.waitKey(0)

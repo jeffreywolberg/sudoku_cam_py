@@ -1,0 +1,10 @@
+Model version MNIST_pyimagesearch_example_model
+
+Used []
+as training images, 54077 in total, MNIST count: 54077
+
+Used 
+as testing images, 9020 in total, MNIST count: 9020
+
+Learning rate: 0.001, epochs: 10, batch size: 150, error on test set: 0.7871389389038086
+Image length: 34

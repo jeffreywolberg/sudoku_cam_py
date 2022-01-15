@@ -1,0 +1,5 @@
+Used /Users/jeffrey/Coding/sudoku_cam_py/training_set, 
+as testing images, 319 in total, MNIST count: 0
+
+Learning rate: 0.001, epochs: 10, batch size: 50, accuracy on test set: 1.4412403106689453
+Image length: 34

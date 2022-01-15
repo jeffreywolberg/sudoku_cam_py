@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import cv2
 from tensorflow.keras.datasets import mnist
+import numpy as np
 
 
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
@@ -24,6 +25,10 @@ def visualize_number(num):
         cv2.waitKey(0)
 
 
-def show_image(image, windowName = "Image"):
-    cv2.imshow(windowName, image)
+def show_image(image=None, windowName = "Image", images=None):
+    assert image is not None or images is not None
+    if images is not None:
+        cv2.imshow("Images", np.hstack([im for im in images]))
+    else:
+        cv2.imshow(windowName, image)
     cv2.waitKey(0)

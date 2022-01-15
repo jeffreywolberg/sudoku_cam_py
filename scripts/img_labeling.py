@@ -3,6 +3,8 @@ import os
 from board_finder import SudokuSolver, SudokuBoardNotFoundError
 import glob
 import numpy as np
+from tensorflow.keras.datasets import mnist
+from visualize_mnist import show_image
 import shutil
 
 basename = os.path.basename
@@ -12,25 +14,33 @@ class ImageLabeling(object):
     def __init__(self, im_folder):
         self.im_folder = im_folder
 
-    def get_and_save_images(self, img_folder, dir_name="test_set", im_length=28):
-        im_paths = [glob.glob(join(img_folder, f"*{ext}")) for ext in ["jpg", "png"]]
+    def get_and_save_images(self, board_img_folder, save_directory="test_set", im_length=28):
+        im_paths = [glob.glob(join(board_img_folder, f"*{ext}")) for ext in ["jpg", "png"]]
         im_paths = [p for paths in im_paths for p in paths]
         print(im_paths)
         sudoku_solver = SudokuSolver()
-        directory = join(os.getcwd(), dir_name)
-        print(directory)
-        if not os.path.isdir(directory):
-            print(f"Making directory... {directory}")
-            os.mkdir(directory)
+        print(save_directory)
+        if not os.path.isdir(save_directory):
+            print(f"Making directory... {save_directory}")
+            os.mkdir(save_directory)
         for im_path in im_paths:
+            # if images have already been processed for this board, skip
+            if len(glob.glob(join(save_directory, basename(im_path) + "*"))) > 0:
+                print(f"Board in image {im_path} has already been processed, skipping...")
+                continue
             print(f"Finding board for {im_path}...")
-            imgs = sudoku_solver.find_puzzle(cv2.imread(im_path), im_length=im_length).reshape((81, im_length, im_length))
+            try:
+                imgs = sudoku_solver.find_puzzle(cv2.imread(im_path), im_length=im_length, debug_only_crop_and_warp=True).reshape((81, im_length, im_length))
+            except SudokuBoardNotFoundError:
+                continue
             num_saved = 0
             for i in range(81):
                 im = imgs[i]
+                digit_path = join(save_directory, basename(im_path) + f"_im{i}.png")
+                if os.path.exists(digit_path): continue
                 if np.count_nonzero(im)/(im_length*im_length) <= .03: continue
                 num_saved += 1
-                cv2.imwrite(join(dir_name, basename(im_path) + f"_im{i}.png"), im)
+                cv2.imwrite(digit_path, im)
             print(f"Saved {num_saved} images for sudoku board in {basename(im_path)}")
 
     def run_labeling_pipeline(self):
@@ -166,16 +176,32 @@ class ImageLabeling(object):
         print(file_paths)
 
 
+    def print_digit_distribution(self, folders : list):
+        histo = np.zeros(9)
+        total = 0
+        for folder in folders:
+            for file_path in glob.glob(join(folder, "*.txt")):
+                with open(file_path, 'r') as f:
+                    line = f.readline()
+                    histo[int(line)-1] += 1
+                    total += 1
+        for i in range(len(histo)):
+            print(f"{i+1}: {round(histo[i]/total*100,1)}%")
+
+
+
 
 if __name__ == "__main__":
-    folder = "/Users/jeffrey/Coding/sudoku_cam_py/training_set"
+    folder = "/Users/jeffrey/Coding/sudoku_cam_py/training_set2"
     labeling = ImageLabeling(folder)
     digit_folder = "/Users/jeffrey/Coding/sudoku_cam_py/sudoku_dataset/digit_images"
     images_folder = "/Users/jeffrey/Coding/sudoku_cam_py/sudoku_dataset/mixed"
-    # labeling.get_and_save_images("/Users/jeffrey/Coding/sudoku_cam_py/board_images", im_length=34, dir_name="training_set")
+    # labeling.get_and_save_images(r"/Users/jeffrey/Coding/sudoku_cam_py/board_images", im_length=34, save_directory=r"/Users/jeffrey/Coding/sudoku_cam_py/training_set2")
     # labeling.run_labeling_pipeline()
     # labeling.run_labeling_pipeline()
     # labeling.process_sudoku_dataset(images_folder,
     #                                 dir_name=digit_folder)
     labeling.remove_images_with_zero(folder)
+    # labeling.print_digit_distribution([digit_folder, folder])
+    # labeling.remove_images_with_zero(folder)
 

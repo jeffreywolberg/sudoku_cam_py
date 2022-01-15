@@ -1,0 +1,10 @@
+Model version MNIST_large_model
+
+Used [/Users/jeffrey/Coding/sudoku_cam_py/augmented_digit_images2, /Users/jeffrey/Coding/sudoku_cam_py/augmented_training_set2, ]
+as training images, 106909 in total, MNIST count: 54077
+
+Used /Users/jeffrey/Coding/sudoku_cam_py/training_set2, 
+as testing images, 3027 in total, MNIST count: 1500
+
+Learning rate: 0.0001, epochs: 10, batch size: 150, error on test set: 0.93%
+Image length: 34
