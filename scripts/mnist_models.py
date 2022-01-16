@@ -43,7 +43,7 @@ def MNIST_large_model(im_length=28) -> kerasModel:
     mod.add(Flatten())
     mod.add(Dense(128, activation='relu'))
     mod.add(Dense(64, activation='relu'))
-    mod.add(Dense(9, activation='softmax'))
+    mod.add(Dense(10, activation='softmax'))
     opt = SGD(learning_rate=0.0004, momentum=0.9)
     mod.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
     return mod
@@ -59,7 +59,7 @@ def MNIST_jason_brownlee_example(im_length=28) -> kerasModel:
     # model.add(Dense(100, activation='relu', kernel_initializer='he_uniform'))
     model.add(Dense(128, activation='relu', kernel_initializer='he_uniform'))
     model.add(Dense(50, activation='relu', kernel_initializer='he_uniform'))
-    model.add(Dense(9, activation='softmax'))
+    model.add(Dense(10, activation='softmax'))
     # compile model
     opt = SGD(learning_rate=0.001, momentum=0.9)
     model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
@@ -89,7 +89,7 @@ def MNIST_pyimagesearch_example_model(im_length=28) -> kerasModel:
     model.add(Activation("relu"))
     # model.add(Dropout(0.5))
     # softmax classifier
-    model.add(Dense(9))
+    model.add(Dense(10))
     model.add(Activation("softmax"))
     # return the constructed network architecture
     return model

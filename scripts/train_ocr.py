@@ -127,12 +127,15 @@ test_labels = []
 
 # LOAD CUSTOM DATA
 train_dirs = [
-    # join(dirname(os.getcwd()), "augmented_digit_images2"),
-    # join(dirname(os.getcwd()), "augmented_training_set2"),
-    join(dirname(os.getcwd()), "training_set2"),
+    join(dirname(os.getcwd()), "augmented_digit_images2"),
+    join(dirname(os.getcwd()), "augmented_training_set2"),
+    join(dirname(os.getcwd()), "salt_and_pepper_images"),
+    join(dirname(os.getcwd()), "junk_around_border_images")
+    # join(dirname(os.getcwd()), "training_set2"),
              ]
 test_dirs = [
     join(dirname(os.getcwd()), "training_set2"),
+    join(dirname(os.getcwd()), "junk_test_images")
              ]
 
 for data_dir in train_dirs:
@@ -219,12 +222,12 @@ assert np.max(test_imgs) == 1.0, f"Max is {np.max(test_imgs)}, it must be 1.0"
 
 
 # one hot encode outputs, 0 is not included
-y_train = to_categorical(y_train-1, num_classes=9)
-y_test = to_categorical(y_test-1, num_classes=9)
+y_train = to_categorical(y_train, num_classes=10)
+y_test = to_categorical(y_test, num_classes=10)
 
 # custom_labels_encoded = to_categorical(custom_labels-1, num_classes=9)
-train_labels_encoded = to_categorical(train_labels-1, num_classes=9)
-test_labels_encoded = to_categorical(test_labels-1, num_classes=9)
+train_labels_encoded = to_categorical(train_labels, num_classes=10)
+test_labels_encoded = to_categorical(test_labels, num_classes=10)
 
 print(f"Train images length {train_imgs.shape[0]}")
 print(f"Test images length {test_imgs.shape[0]}")
@@ -232,10 +235,10 @@ print(f"Test images length {test_imgs.shape[0]}")
 # tensorflow.keras.callbacks.ModelCheckpoint(saved_model_path, 'val_acc', save_best_only=True, )
 
 # model = MNIST_large_model2(im_length)
-retrain = True
+retrain = False
 from_retrained_model = False
 # train_number = ""
-train_number = "1"
+train_number = "2"
 retrain_letter = "a"
 model_version = MNIST_large_model
 model_version_name = str(model_version).split("function ")[1].split(" at")[0]
@@ -253,7 +256,7 @@ else:
 # print(model.weights)
 # opt = SGD(learning_rate=4e-4, momentum=0.9)
 # model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['accuracy'])
-lr = 1e-5
+lr = 5e-4
 epochs = 10
 batch_size = 100
 

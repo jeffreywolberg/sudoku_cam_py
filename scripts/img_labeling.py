@@ -191,6 +191,7 @@ class ImageLabeling(object):
 
 
 
+
 if __name__ == "__main__":
     folder = "/Users/jeffrey/Coding/sudoku_cam_py/training_set2"
     labeling = ImageLabeling(folder)

@@ -124,14 +124,23 @@ class ImageProcessor(object):
             return None
 
         # thresh = cv2.adaptiveThreshold(cell, 255.0, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 3, -2)
-        thresh = cv2.threshold(cell, 140, 255.0,
-                               cv2.THRESH_BINARY_INV
+        # cv2.adaptiveThreshold(cell, 255)
+        # show_image(cell)
+        thresh = cv2.threshold(cell, 100, 255.0,
+                               cv2.THRESH_BINARY_INV +
+                               cv2.THRESH_OTSU
                                # | cv2.THRESH_OTSU
                                )[1]
+
         if thresh is None:
             return None
 
+        print(thresh.shape)
         thresh = clear_border(thresh)
+
+        if np.count_nonzero(thresh) / (thresh.shape[0] * thresh.shape[1]) < .015: return None
+
+        else: return thresh
 
         cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
                                 cv2.CHAIN_APPROX_SIMPLE)
@@ -224,6 +233,6 @@ if __name__ == "__main__":
     # im_paths = ["test.PNG", "sample_board.jpg", "sample_board2.jpg", "sample_board3.jpg", "sample_board4.jpg", "sample_board5.jpg"]
     # solver.get_and_save_test_images(im_paths, im_length=34)
 
-    im_path = "/Users/jeffrey/Coding/sudoku_cam_py/board_images/sample_board.jpg"
+    im_path = "/Users/jeffrey/Coding/sudoku_cam_py/board_images/IMG-5300.jpg"
     image = cv2.imread(im_path)
     solver.find_puzzle(image, debug=True, im_length=34)

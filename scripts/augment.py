@@ -6,6 +6,7 @@ import numpy as np
 import glob
 import os
 from visualize_mnist import show_image
+import random
 import tqdm
 
 join = os.path.join
@@ -133,10 +134,61 @@ class Augmenter(object):
                         imgs[i*self.im_length:(i+1)*self.im_length, j*self.im_length:(j+1)*self.im_length,] = cv2.imread(same_img_paths[im_num], cv2.IMREAD_GRAYSCALE)
                 show_image(imgs)
 
+    def save_salt_and_pepper_ims(self, im_length, num_images, folder):
+        if not os.path.isdir(folder): os.mkdir(folder)
+        for i in tqdm.tqdm(range(num_images)):
+            im_path = join(folder, f"salt_pepper_im{i}.png")
+            im = np.zeros((im_length, im_length))
+            rand_range = random.randint(20, 35)
+            for _ in range(rand_range):
+                width = np.random.randint(0, 33)
+                height = np.random.randint(0, 33)
+                im[height, width] = 255
+            with open(im_path[:-4] + ".txt", "w") as f:
+                f.write("0")
+            cv2.imwrite(im_path, im)
+        print(f"Saved {num_images} salt and pepper ims in {folder}!")
+
+    def save_ims_with_junk_around_border(self, im_length, num_images, folder):
+        if not os.path.isdir(folder): os.mkdir(folder)
+        for i in tqdm.tqdm(range(num_images)):
+            im = np.zeros((im_length, im_length))
+            location = random.choice(["top", "bottom", "left", "right"])
+            im_path = join(folder, f"junk_around_border_{location}_im{i}.png")
+            starting_range = (3,7)
+            rand_range = random.randint(15, im_length-starting_range[1]-1)
+            starting = random.randint(starting_range[0], starting_range[1])
+            if location == "top":
+                for i in range(rand_range):
+                    if random.random() <= .75:
+                        im[random.randint(2,4), starting + i] = 255
+            elif location == "bottom":
+                for i in range(rand_range):
+                    if random.random() <= .75:
+                        im[random.randint(im_length-4,im_length-2), starting + i] = 255
+            elif location == "left":
+                for i in range(rand_range):
+                    if random.random() <= .75:
+                        im[starting + i ,random.randint(2,4)] = 255
+            elif location == "right":
+                for i in range(rand_range):
+                    if random.random() <= .75:
+                        im[starting + i, random.randint(im_length-4,im_length-2)] = 255
+
+            with open(im_path[:-4] + ".txt", "w") as f:
+                f.write("0")
+            cv2.imwrite(im_path, im)
+
+        print(f"Saved {num_images} junk ims in {folder}!")
+
+
+
 #49057
 
 if __name__ == "__main__":
     data_folder = "/Users/jeffrey/Coding/sudoku_cam_py/sudoku_dataset/digit_images2"
     augmenter = Augmenter(data_folder, 34)
     # augmenter.augment_images()
-    augmenter.show_diff_btwn_augmented_images(digit=1)
+    # augmenter.show_diff_btwn_augmented_images(digit=1)
+    # augmenter.save_salt_and_pepper_ims(34, 500, "/Users/jeffrey/Coding/sudoku_cam_py/junk_test_images")
+    # augmenter.save_ims_with_junk_around_border(34, 500, "/Users/jeffrey/Coding/sudoku_cam_py/junk_test_images")

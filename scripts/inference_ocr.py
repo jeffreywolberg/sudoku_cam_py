@@ -18,7 +18,8 @@ import time
 # tensorflow.lite.python.lite.TFLite
 
 # path = "/Users/jeffrey/Coding/sudoku_cam_py/sudoku_dataset/mixed/image1005.jpg"
-path = "/Users/jeffrey/Coding/sudoku_cam_py/sudoku_dataset/mixed/image1004.jpg"
+path = "/Users/jeffrey/Coding/sudoku_cam_py/sudoku_dataset/mixed_incomplete/image1002.jpg"
+# path = "/Users/jeffrey/Coding/sudoku_cam_py/board_images/IMG-5302.jpg"
 # im = cv2.imread("/Users/jeffrey/Coding/sudoku_cam_py/sudoku_dataset/mixed/image1083.jpg")
 im = cv2.imread(path)
 # im = cv2.imread(r"/Users/jeffrey/Coding/sudoku_cam_py/sudoku_dataset/images/image1084.jpg")
@@ -53,7 +54,7 @@ print("Time to load model: ", time.time()-s, "seconds")
 s = time.time()
 solver = SudokuSolver()
 im_length = 34
-images = solver.find_puzzle(im, im_length, debug=False, debug_only_get_individual_boxes=True)
+images = solver.find_puzzle(im, im_length, debug=True, debug_only_get_individual_boxes=True)
 board_image = np.zeros(shape=(9*im_length, 9*im_length))
 
 debug = True
@@ -89,7 +90,7 @@ for i, r in enumerate(res):
     print(f"{i}: ", end="")
     # if i in [22, 28, 32, 40, 44, 52, 60, 68]:
     if np.max(r) >= .4 and i in inds_w_digits:
-        print(np.argmax(r) + 1, end=" : ")
+        print(np.argmax(r), end=" : ")
     else:
         print("No number", end=" : ")
     print("[", end="")
