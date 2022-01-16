@@ -17,7 +17,6 @@ import numpy as np
 import os
 import time
 import random
-import imgaug
 # import cv2
 
 join = os.path.join
@@ -44,9 +43,13 @@ def convert_keras_model_to_tflite(model: tf.keras.models.Model, model_path: str)
 def convert_model_from_path_to_tflite(model_path: str):
     converter = tf.lite.TFLiteConverter.from_saved_model(model_path)
     tflite_model = converter.convert()
-    new_path = join("tflite_models", os.path.basename(model_path) + ".tflite")
+    if not os.path.isdir("../tflite_models"): os.mkdir("../tflite_models")
+    new_path = join("../tflite_models", os.path.basename(model_path) + ".tflite")
     with open(new_path, 'wb') as f:
         f.write(tflite_model)
+    print(f"Saved tflite model to {new_path}")
+
+# convert_model_from_path_to_tflite("../tf_models/MNIST_large_model_0a")
 
 def get_label(txt_file):
     with open(txt_file, "r") as f:
@@ -126,7 +129,7 @@ test_labels = []
 train_dirs = [
     # join(dirname(os.getcwd()), "augmented_digit_images2"),
     # join(dirname(os.getcwd()), "augmented_training_set2"),
-    # join(dirname(os.getcwd()), "training_set2"),
+    join(dirname(os.getcwd()), "training_set2"),
              ]
 test_dirs = [
     join(dirname(os.getcwd()), "training_set2"),
@@ -240,9 +243,9 @@ model_version_name = str(model_version).split("function ")[1].split(" at")[0]
 
 if retrain:
     if from_retrained_model:
-        saved_model_path = join(f"/Users/jeffrey/Coding/sudoku_cam_py/tf_models/{model_version_name}_{train_number}{chr(ord(retrain_letter)-1)}")
+        saved_model_path = join(dirname(os.getcwd()), f"tf_models/{model_version_name}_{train_number}{chr(ord(retrain_letter)-1)}")
     else:
-        saved_model_path = join(f"/Users/jeffrey/Coding/sudoku_cam_py/tf_models/{model_version_name}_{train_number}")
+        saved_model_path = join(dirname(os.getcwd()), f"tf_models/{model_version_name}_{train_number}")
     model: kerasModel = tensorflow.keras.models.load_model(saved_model_path)
 else:
     model = model_version(im_length)
@@ -253,11 +256,12 @@ else:
 lr = 1e-5
 epochs = 10
 batch_size = 100
+
 model.compile(optimizer=Adam(learning_rate=lr), loss='categorical_crossentropy', metrics=['accuracy'])
 if retrain:
-    new_model_path = f"/Users/jeffrey/Coding/sudoku_cam_py/tf_models/{model_version_name}_{train_number}{retrain_letter}"
+    new_model_path = join(dirname(os.getcwd()), f"tf_models/{model_version_name}_{train_number}{retrain_letter}")
 else:
-    new_model_path = f"/Users/jeffrey/Coding/sudoku_cam_py/tf_models/{model_version_name}_{train_number}"
+    new_model_path = join(dirname(os.getcwd()), f"tf_models/{model_version_name}_{train_number}")
 
 # adam = tf.keras.optimizers.Adam(learning_rate=1e-3)
 # model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
