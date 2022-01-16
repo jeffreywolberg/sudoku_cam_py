@@ -49,7 +49,8 @@ def convert_model_from_path_to_tflite(model_path: str):
         f.write(tflite_model)
     print(f"Saved tflite model to {new_path}")
 
-# convert_model_from_path_to_tflite("../tf_models/MNIST_large_model_0a")
+convert_model_from_path_to_tflite("../tf_models/MNIST_large_model_2a")
+quit()
 
 def get_label(txt_file):
     with open(txt_file, "r") as f:
