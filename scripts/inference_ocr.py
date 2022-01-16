@@ -41,7 +41,7 @@ im = cv2.imread(path)
 join = os.path.join
 
 s = time.time()
-saved_model_path = "/Users/jeffrey/Coding/sudoku_cam_py/tf_models/MNIST_large_model_0a"
+saved_model_path = "/Users/jeffrey/Coding/sudoku_cam_py/tf_models/MNIST_large_model_1a"
 print(saved_model_path)
 model : kerasModel = load_model(saved_model_path)
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])

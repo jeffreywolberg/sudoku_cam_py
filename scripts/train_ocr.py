@@ -175,17 +175,17 @@ print(f"Added black padding in {time.time() - s} seconds")
 print(f"Mnist train shape {X_train.shape}")
 print(f"Mnist test shape {X_test.shape}")
 
-s = time.time()
-print("Converting images to binary...")
-for i in range(X_train.shape[0]):
-    X_train[i] = cv2.threshold(X_train[i], clamp(random.gauss(120, 50), 50, 200), 1.0, cv2.CV_8U)[1].astype('float32')
-for i in range(X_test.shape[0]):
-    X_test[i] = cv2.threshold(X_test[i], clamp(random.gauss(120, 50), 50, 200), 1.0, cv2.CV_8U)[1].astype('float32')
-for i in range(train_imgs.shape[0]):
-    train_imgs[i] = cv2.threshold(train_imgs[i], clamp(random.gauss(120, 50), 50, 200), 1.0, cv2.CV_8U)[1].astype('float32')
-for i in range(test_imgs.shape[0]):
-    test_imgs[i] = cv2.threshold(test_imgs[i], clamp(random.gauss(120, 50), 50, 200), 1.0, cv2.CV_8U)[1].astype('float32')
-print(f"Finished in {time.time() - s} seconds")
+# s = time.time()
+# print("Converting images to binary...")
+# for i in range(X_train.shape[0]):
+#     X_train[i] = cv2.threshold(X_train[i], clamp(random.gauss(120, 50), 50, 200), 1.0, cv2.CV_8U)[1].astype('float32')
+# for i in range(X_test.shape[0]):
+#     X_test[i] = cv2.threshold(X_test[i], clamp(random.gauss(120, 50), 50, 200), 1.0, cv2.CV_8U)[1].astype('float32')
+# for i in range(train_imgs.shape[0]):
+#     train_imgs[i] = cv2.threshold(train_imgs[i], clamp(random.gauss(120, 50), 50, 200), 1.0, cv2.CV_8U)[1].astype('float32')
+# for i in range(test_imgs.shape[0]):
+#     test_imgs[i] = cv2.threshold(test_imgs[i], clamp(random.gauss(120, 50), 50, 200), 1.0, cv2.CV_8U)[1].astype('float32')
+# print(f"Finished in {time.time() - s} seconds")
 
 # for i in range(34):
 #     print(train_imgs[101][i])
@@ -196,6 +196,7 @@ print(f"Finished in {time.time() - s} seconds")
 # peek_at_data(test_imgs, im_range)
 
 X_train, X_test, train_imgs, test_imgs = reshape_and_normalize_data(X_train, X_test, train_imgs, test_imgs)
+
 
 print(train_imgs.shape, X_train.shape, test_imgs.shape, X_test.shape)
 split_train = X_train.shape[0]
@@ -212,9 +213,7 @@ assert np.max(X_test) == 1.0, f"Max is {np.max(X_test)}, it must be 1.0"
 assert np.max(train_imgs) == 1.0, f"Max is {np.max(train_imgs)}, it must be 1.0"
 assert np.max(test_imgs) == 1.0, f"Max is {np.max(test_imgs)}, it must be 1.0"
 
-# for i in range(0, 3000, 9):
-#     peek_at_data(train_imgs, [n for n in range(i,i+9)])
-# quit()
+
 
 # one hot encode outputs, 0 is not included
 y_train = to_categorical(y_train-1, num_classes=9)
@@ -233,7 +232,7 @@ print(f"Test images length {test_imgs.shape[0]}")
 retrain = True
 from_retrained_model = False
 # train_number = ""
-train_number = "0"
+train_number = "1"
 retrain_letter = "a"
 model_version = MNIST_large_model
 model_version_name = str(model_version).split("function ")[1].split(" at")[0]
@@ -251,9 +250,9 @@ else:
 # print(model.weights)
 # opt = SGD(learning_rate=4e-4, momentum=0.9)
 # model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['accuracy'])
-lr = 1e-4
-epochs = 8
-batch_size = 200
+lr = 1e-5
+epochs = 10
+batch_size = 100
 model.compile(optimizer=Adam(learning_rate=lr), loss='categorical_crossentropy', metrics=['accuracy'])
 if retrain:
     new_model_path = f"/Users/jeffrey/Coding/sudoku_cam_py/tf_models/{model_version_name}_{train_number}{retrain_letter}"

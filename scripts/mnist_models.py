@@ -29,20 +29,20 @@ def MNIST_medium_model() -> kerasModel:
 
 def MNIST_large_model(im_length=28) -> kerasModel:
     mod = Sequential()
-    mod.add(Conv2D(32, (5, 5), activation='relu', padding='same', kernel_initializer='he_uniform', input_shape=(im_length, im_length, 1),))
+    mod.add(Conv2D(32, (5, 5), activation='relu', padding='same', input_shape=(im_length, im_length, 1),))
     mod.add(MaxPooling2D((2, 2)))
-    mod.add(Conv2D(32, (5, 5), activation='relu', kernel_initializer='he_uniform',))
+    mod.add(Conv2D(32, (5, 5), activation='relu', ))
     # mod.add(Dropout(0.10))
 
-    mod.add(Conv2D(64, (3, 3), activation='relu', padding='same', kernel_initializer='he_uniform'))
+    mod.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
     mod.add(MaxPooling2D((2, 2)))
-    mod.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform'))
-    # mod.add(MaxPooling2D((2, 2)))
+    mod.add(Conv2D(64, (3, 3), activation='relu'))
+    mod.add(MaxPooling2D((2, 2)))
     # mod.add(Dropout(0.20))
 
     mod.add(Flatten())
     mod.add(Dense(128, activation='relu'))
-    mod.add(Dense(50, activation='relu'))
+    mod.add(Dense(64, activation='relu'))
     mod.add(Dense(9, activation='softmax'))
     opt = SGD(learning_rate=0.0004, momentum=0.9)
     mod.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
