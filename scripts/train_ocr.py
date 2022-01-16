@@ -128,11 +128,11 @@ test_labels = []
 
 # LOAD CUSTOM DATA
 train_dirs = [
-    join(dirname(os.getcwd()), "augmented_digit_images2"),
-    join(dirname(os.getcwd()), "augmented_training_set2"),
-    join(dirname(os.getcwd()), "salt_and_pepper_images"),
-    join(dirname(os.getcwd()), "junk_around_border_images"),
-    join(dirname(os.getcwd()), "training_set2"),
+    # join(dirname(os.getcwd()), "augmented_digit_images2"),
+    # join(dirname(os.getcwd()), "augmented_training_set2"),
+    # join(dirname(os.getcwd()), "salt_and_pepper_images"),
+    # join(dirname(os.getcwd()), "junk_around_border_images"),
+    # join(dirname(os.getcwd()), "training_set2"),
              ]
 test_dirs = [
     join(dirname(os.getcwd()), "training_set2"),
@@ -237,7 +237,7 @@ print(f"Test images length {test_imgs.shape[0]}")
 
 # model = MNIST_large_model2(im_length)
 retrain = True
-from_retrained_model = False
+from_retrained_model = True
 # train_number = ""
 train_number = "3"
 retrain_letter = "b"
@@ -257,8 +257,8 @@ else:
 # print(model.weights)
 # opt = SGD(learning_rate=4e-4, momentum=0.9)
 # model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['accuracy'])
-lr = 1e-5
-epochs = 8
+lr = 1e-4
+epochs = 12
 batch_size = 100
 
 model.compile(optimizer=Adam(learning_rate=lr), loss='categorical_crossentropy', metrics=['accuracy'])
