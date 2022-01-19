@@ -1,0 +1,10 @@
+Model version MNIST_large_model
+
+Used [/home/jeffrey/sudoku_cam_py/augmented_digit_images2, /home/jeffrey/sudoku_cam_py/augmented_training_set2, /home/jeffrey/sudoku_cam_py/salt_and_pepper_images, /home/jeffrey/sudoku_cam_py/junk_around_border_images, /home/jeffrey/sudoku_cam_py/black_ims, /home/jeffrey/sudoku_cam_py/augmented_MNIST_shear, /home/jeffrey/sudoku_cam_py/augmented_MNIST_shear_rotation, ]
+as training images, 230005 in total, MNIST count: 54077
+
+Used /home/jeffrey/sudoku_cam_py/training_set2, /home/jeffrey/sudoku_cam_py/junk_test_images, 
+as testing images, 11547 in total, MNIST count: 9020
+
+Learning rate: 0.0001, epochs: 7, batch size: 100, error on test set: 0.95%
+Image length: 34
