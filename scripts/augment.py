@@ -9,7 +9,7 @@ from visualize_mnist import show_image, visualize_augmented_MNIST_images
 import random
 import tqdm
 from tensorflow.keras.datasets import mnist
-from train_ocr import get_specific_digits
+from train_ocr import get_specific_digits, add_black
 import matplotlib.pyplot as plt
 
 join = os.path.join
@@ -192,10 +192,12 @@ class Augmenter(object):
             with open(im_path[:-4] + ".txt", "w") as f:
                 f.write("0")
 
-    def augment_MNIST_images(self, save_folder, rotation_range=30, width_shift=.2, height_shift=.2, shear_range=40, zoom_range_low=1.0, zoom_range_high=1.0):
+    def augment_MNIST_images(self, save_folder, im_length, rotation_range=30, width_shift=.2, height_shift=.2, shear_range=40, zoom_range_low=1.0, zoom_range_high=1.0):
         if not os.path.isdir(save_folder): os.mkdir(save_folder)
         (X_train, y_train), (X_test, y_test) = mnist.load_data()
         X_train, y_train = get_specific_digits(X_train, y_train, digits_not=[0])
+        X_train = add_black(X_train, old_size=28, d_size=im_length)
+
 
         from tensorflow.keras.preprocessing.image import ImageDataGenerator
         datagen = ImageDataGenerator(
@@ -206,12 +208,11 @@ class Augmenter(object):
                                      zoom_range=[zoom_range_low, zoom_range_high],
                                      )
 
-        visualize_augmented_MNIST_images(datagen)
-        quit()
-        X_aug = np.zeros(shape=(X_train.shape[0], 28, 28, 1))
+        # visualize_augmented_MNIST_images(datagen)
+        X_aug = np.zeros(shape=(X_train.shape[0], im_length, im_length, 1))
         y_aug = np.zeros(y_train.shape[0])
         b_size = 32
-        for i, (X, y) in tqdm.tqdm(enumerate(datagen.flow(X_train.reshape(X_train.shape[0], 28, 28, 1),
+        for i, (X, y) in tqdm.tqdm(enumerate(datagen.flow(X_train.reshape(X_train.shape[0], im_length, im_length, 1),
                              y_train.reshape(y_train.shape[0], 1),
                              batch_size=b_size,
                              shuffle=False))):
@@ -248,7 +249,7 @@ class Augmenter(object):
 #49057
 
 if __name__ == "__main__":
-    data_folder = "/Users/jeffrey/Coding/sudoku_cam_py/sudoku_dataset/digit_images2"
+    data_folder = "../sudoku_dataset/digit_images2"
     augmenter = Augmenter(data_folder, 34)
     # augmenter.augment_images()
     # augmenter.show_diff_btwn_augmented_images(digit=1)
@@ -257,5 +258,5 @@ if __name__ == "__main__":
     # augmenter.save_black_ims("/Users/jeffrey/Coding/sudoku_cam_py/black_ims", 34, 5000)
     # augmenter.augment_MNIST_images(save_folder="/Users/jeffrey/Coding/sudoku_cam_py/augmented_MNIST_rotation_and_shear",
     #                                zoom_range_low=1, zoom_range_high=1, shear_range=30, rotation_range=30, width_shift=0, height_shift=0)
-    augmenter.augment_MNIST_images(save_folder="/Users/jeffrey/Coding/sudoku_cam_py/augmented_MNIST_shear",
-                                   zoom_range_low=1, zoom_range_high=1, shear_range=35, rotation_range=0, width_shift=.15, height_shift=.15)
+    augmenter.augment_MNIST_images(save_folder="../augmented_MNIST_shear_rotation", im_length=34,
+                                   zoom_range_low=.90, zoom_range_high=1.10, shear_range=25, rotation_range=25, width_shift=.10, height_shift=.10)
