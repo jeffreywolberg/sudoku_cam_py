@@ -3,8 +3,15 @@ Model version MNIST_large_model
 Used []
 as training images, 54077 in total, MNIST count: 54077
 
+<<<<<<< HEAD
 Used /Users/jeffrey/Coding/sudoku_cam_py/training_set2, /Users/jeffrey/Coding/sudoku_cam_py/junk_test_images, 
 as testing images, 11547 in total, MNIST count: 9020
 
 Learning rate: 0.0001, epochs: 7, batch size: 100, error on test set: 0.61%
+=======
+Used /home/jeffrey/sudoku_cam_py/training_set2, /home/jeffrey/sudoku_cam_py/junk_test_images, 
+as testing images, 11547 in total, MNIST count: 9020
+
+Learning rate: 0.0001, epochs: 7, batch size: 100, error on test set: 0.63%
+>>>>>>> 3591dc70b23f052ec2ac93de820c00b55127c972
 Image length: 34
