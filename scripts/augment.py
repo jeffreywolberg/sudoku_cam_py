@@ -5,9 +5,12 @@ import imgaug.augmenters as iaa
 import numpy as np
 import glob
 import os
-from visualize_mnist import show_image
+from visualize_mnist import show_image, visualize_augmented_MNIST_images
 import random
 import tqdm
+from tensorflow.keras.datasets import mnist
+from train_ocr import get_specific_digits
+import matplotlib.pyplot as plt
 
 join = os.path.join
 basename = os.path.basename
@@ -181,6 +184,65 @@ class Augmenter(object):
 
         print(f"Saved {num_images} junk ims in {folder}!")
 
+    def save_black_ims(self, folder, im_length, num_images):
+        if not os.path.isdir(folder): os.mkdir(folder)
+        for i in range(num_images):
+            im_path = join(folder, f"black_im_{i}.png")
+            cv2.imwrite(im_path, np.zeros((im_length, im_length)))
+            with open(im_path[:-4] + ".txt", "w") as f:
+                f.write("0")
+
+    def augment_MNIST_images(self, save_folder, rotation_range=30, width_shift=.2, height_shift=.2, shear_range=40, zoom_range_low=1.0, zoom_range_high=1.0):
+        if not os.path.isdir(save_folder): os.mkdir(save_folder)
+        (X_train, y_train), (X_test, y_test) = mnist.load_data()
+        X_train, y_train = get_specific_digits(X_train, y_train, digits_not=[0])
+
+        from tensorflow.keras.preprocessing.image import ImageDataGenerator
+        datagen = ImageDataGenerator(
+            rotation_range=rotation_range,
+                                     width_shift_range=width_shift,
+                                     height_shift_range=height_shift,
+                                     shear_range=shear_range,
+                                     zoom_range=[zoom_range_low, zoom_range_high],
+                                     )
+
+        visualize_augmented_MNIST_images(datagen)
+        quit()
+        X_aug = np.zeros(shape=(X_train.shape[0], 28, 28, 1))
+        y_aug = np.zeros(y_train.shape[0])
+        b_size = 32
+        for i, (X, y) in tqdm.tqdm(enumerate(datagen.flow(X_train.reshape(X_train.shape[0], 28, 28, 1),
+                             y_train.reshape(y_train.shape[0], 1),
+                             batch_size=b_size,
+                             shuffle=False))):
+            if (i+1)*b_size > X_aug.shape[0]:
+                break
+            X_aug[i*b_size:(i+1)*b_size] = X
+            y_aug[i*b_size:(i+1)*b_size] = np.squeeze(y)
+            for im_num in range(i*b_size, (i+1)*b_size):
+                im_path = join(save_folder, f"im{im_num}_label{int(y_aug[im_num])}.png")
+                cv2.imwrite(im_path, X_aug[im_num])
+                with open(join(save_folder, im_path[:-4] + ".txt"), "a+") as f:
+                    f.write(str(int(y_aug[im_num])))
+
+
+        with open(join(save_folder, "augmentations_summary.txt"), "a+") as f:
+            txt = "Augmentations used\n"\
+            f"Rotation range: {datagen.rotation_range}\n" \
+            f"width shift range: {datagen.width_shift_range}\n" \
+            f"height shift range: {datagen.height_shift_range}\n" \
+            f"shear range: {datagen.shear_range}\n" \
+            f"zoom range: {datagen.zoom_range}\n" \
+
+            f.write(txt)
+
+
+
+
+
+
+
+
 
 
 #49057
@@ -192,3 +254,8 @@ if __name__ == "__main__":
     # augmenter.show_diff_btwn_augmented_images(digit=1)
     # augmenter.save_salt_and_pepper_ims(34, 500, "/Users/jeffrey/Coding/sudoku_cam_py/junk_test_images")
     # augmenter.save_ims_with_junk_around_border(34, 500, "/Users/jeffrey/Coding/sudoku_cam_py/junk_test_images")
+    # augmenter.save_black_ims("/Users/jeffrey/Coding/sudoku_cam_py/black_ims", 34, 5000)
+    # augmenter.augment_MNIST_images(save_folder="/Users/jeffrey/Coding/sudoku_cam_py/augmented_MNIST_rotation_and_shear",
+    #                                zoom_range_low=1, zoom_range_high=1, shear_range=30, rotation_range=30, width_shift=0, height_shift=0)
+    augmenter.augment_MNIST_images(save_folder="/Users/jeffrey/Coding/sudoku_cam_py/augmented_MNIST_shear",
+                                   zoom_range_low=1, zoom_range_high=1, shear_range=35, rotation_range=0, width_shift=.15, height_shift=.15)

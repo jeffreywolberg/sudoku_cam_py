@@ -28,7 +28,7 @@ class ImageProcessor(object):
 
         # apply adaptive thresholding and then invert the threshold map
         thresh = cv2.adaptiveThreshold(blurred, 255.0,
-                                       cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+                                       cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, 2)
         binary = cv2.bitwise_not(thresh)
 
         if debug:
@@ -135,8 +135,13 @@ class ImageProcessor(object):
         if thresh is None:
             return None
 
-        print(thresh.shape)
+        # if debug:
+        #     show_image(thresh, windowName="Before clearing border")
+
         thresh = clear_border(thresh)
+
+        # if debug:
+        #     show_image(thresh, windowName="After clearing border")
 
         if np.count_nonzero(thresh) / (thresh.shape[0] * thresh.shape[1]) < .015: return None
 
@@ -233,6 +238,8 @@ if __name__ == "__main__":
     # im_paths = ["test.PNG", "sample_board.jpg", "sample_board2.jpg", "sample_board3.jpg", "sample_board4.jpg", "sample_board5.jpg"]
     # solver.get_and_save_test_images(im_paths, im_length=34)
 
-    im_path = "/Users/jeffrey/Coding/sudoku_cam_py/board_images/IMG-5300.jpg"
+    # im_path = "/Users/jeffrey/Coding/sudoku_cam_py/board_images/IMG-5300.jpg"
+    im_path = "Users/jeffrey/Coding/sudoku_cam_py/board_images/IMG-5318.jpg"
     image = cv2.imread(im_path)
     solver.find_puzzle(image, debug=True, im_length=34)
+

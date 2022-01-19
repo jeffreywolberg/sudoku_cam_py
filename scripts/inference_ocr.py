@@ -18,7 +18,10 @@ import time
 # tensorflow.lite.python.lite.TFLite
 
 # path = "/Users/jeffrey/Coding/sudoku_cam_py/sudoku_dataset/mixed/image1005.jpg"
-path = "/Users/jeffrey/Coding/sudoku_cam_py/sudoku_dataset/mixed_incomplete/image1002.jpg"
+# path = "/Users/jeffrey/Coding/sudoku_cam_py/board_images/IMG-5305.jpg"
+# path = "/Users/jeffrey/Coding/sudoku_cam_py/board_images/IMG-5318.jpg"
+path = "/Users/jeffrey/Coding/sudoku_cam_py/board_images/IMG-5321.jpg"
+
 # path = "/Users/jeffrey/Coding/sudoku_cam_py/board_images/IMG-5302.jpg"
 # im = cv2.imread("/Users/jeffrey/Coding/sudoku_cam_py/sudoku_dataset/mixed/image1083.jpg")
 im = cv2.imread(path)
@@ -42,7 +45,7 @@ im = cv2.imread(path)
 join = os.path.join
 
 s = time.time()
-saved_model_path = "/Users/jeffrey/Coding/sudoku_cam_py/tf_models/MNIST_large_model_1a"
+saved_model_path = "/Users/jeffrey/Coding/sudoku_cam_py/tf_models/MNIST_large_model_3a"
 print(saved_model_path)
 model : kerasModel = load_model(saved_model_path)
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -89,7 +92,7 @@ print("Time to find board and predict digits: ", time.time() - s, "seconds")
 for i, r in enumerate(res):
     print(f"{i}: ", end="")
     # if i in [22, 28, 32, 40, 44, 52, 60, 68]:
-    if np.max(r) >= .4 and i in inds_w_digits:
+    if np.max(r) >= .5 and i in inds_w_digits:
         print(np.argmax(r), end=" : ")
     else:
         print("No number", end=" : ")
