@@ -1,6 +1,0 @@
-Augmentations used
-Rotation range: 0
-width shift range: 0.15
-height shift range: 0.15
-shear range: 35
-zoom range: [0.85, 1.15]

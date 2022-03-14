@@ -68,6 +68,7 @@ class ImageProcessor(object):
             cv2.drawContours(output, [board_vertices], -1, (0, 255, 0), 2)
             cv2.imshow("Puzzle Outline", output)
             cv2.waitKey(0)
+            quit()
         
         return board_vertices
 
@@ -238,8 +239,8 @@ if __name__ == "__main__":
     # im_paths = ["test.PNG", "sample_board.jpg", "sample_board2.jpg", "sample_board3.jpg", "sample_board4.jpg", "sample_board5.jpg"]
     # solver.get_and_save_test_images(im_paths, im_length=34)
 
-    # im_path = "/Users/jeffrey/Coding/sudoku_cam_py/board_images/IMG-5300.jpg"
-    im_path = "Users/jeffrey/Coding/sudoku_cam_py/board_images/IMG-5318.jpg"
+    im_path = "/Users/jeffrey/Coding/sudoku_cam_py/board_images/IMG-5300.jpg"
+    # im_path = "Users/jeffrey/Coding/sudoku_cam_py/board_images/IMG-5318.jpg"
     image = cv2.imread(im_path)
     solver.find_puzzle(image, debug=True, im_length=34)
 
